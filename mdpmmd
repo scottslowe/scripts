@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Set help text to be displayed later as needed
+HELP="Usage: mdpmmd [MARKDOWN FILE]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ $# -gt 1 ]; then
+    echo "Error: Too many parameters. Please supply only a single file name."
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Test to be sure user supplied a parameter; error if not
+if [ $# -eq 0 ]; then
+    echo "Error: No filename supplied."
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Check to see if the user supplied "--help"
+if [ $1 = "--help" ]; then
+    echo $HELP
+    echo
+    exit
+fi
+
+# Generate a temp file
+TMPFILE="$(date +%Y-%m-%d-%H-%M)-md-preview.html"
+
+# If a file with the same name exists, remove it
+if [ -f /tmp/$TMPFILE ]; then
+    rm -f /tmp/$TMPFILE
+fi
+
+# Generate new Markdown preview file
+/opt/bin/multimarkdown --output=/tmp/$TMPFILE \
+    --to=html --full --smart $1
+
+# Open generated preview file in Firefox
+# Assumes firefox binary is in the path
+firefox --new-window file:///tmp/$TMPFILE &> /dev/null &
+
+# Remove preview file after 15 seconds
+sleep 15; rm /tmp/$TMPFILE
