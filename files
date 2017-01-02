@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Assign help text to variable for user later
+HELP="Usage: files [PATH]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ $# -gt 1 ]; then
+    echo "Too many parameters; please supply only a valid path"
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Assign CWD variable to the parameter supplied by the user;
+# if no parameter was supplied, use the current working directory
+if [ $# -eq 0 ]; then
+    CWD=$(pwd)
+else
+    CWD=$1
+fi
+
+# If the user supplied "--help", then provide help text
+if [ $CWD = "--help" ]; then
+    echo $HELP
+    echo
+    exit
+fi
+
+# Catch instances where user supplies "." as path (to open current directory)
+if [ $CWD = "." ]; then
+    CWD=$(pwd)
+fi
+
+# Catch instances where user supplies ".." as path (to open parent directory)
+if [ $CWD = ".." ]; then
+    echo "Double-dot syntax not yet supported; please supply path to parent directory"
+    echo
+    exit
+fi
+
+# Check that the path supplied as a parameter is valid
+if [ ! -d $CWD ]; then
+    echo "Invalid path specified; please provide a valid path"
+    echo
+    exit
+fi
+
+# Open a Nautilus window at the current working directory
+# It is assumed that Nautilus is in the search path
+nautilus --new-window --no-desktop file://$CWD &> /dev/null

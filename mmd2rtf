@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# Assign help text to variable for user later
+HELP="Usage: mmd2rtf [SOURCE] [DEST]"
+
+# If the user supplied "--help", then provide help text
+if [ $1 = "--help" ]; then
+    echo $HELP
+    echo
+    exit
+fi
+
+# Ensure that exactly 2 parameters were given
+# Display error message and help text otherwise
+if [ $# -ne 2 ]; then
+    echo "Error: Incorrect number of parameters"
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Check that source exists and is a normal file
+# Display error message otherwise
+if [ ! -f $1 ]; then
+    echo "Error: Invalid source file supplied"
+    echo
+    exit
+fi
+
+# Assign parameters to variables for use later
+SRC=$1
+DST=$2
+
+# Use pandoc to convert MMD to RTF (assumes pandoc is in the search path)
+pandoc --from=markdown_mmd --to=rtf --output=$DST --smart --standalone $SRC
