@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# This is a wrapper for opening URLs
+# It is designed to facilitate launching the default browser from a command line
+
+# Launch the default browser as specified by xdg-open
+/usr/bin/xdg-open "$@" &> /dev/null &
