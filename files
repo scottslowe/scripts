@@ -49,4 +49,4 @@ fi
 
 # Open a Nautilus window at the current working directory
 # It is assumed that Nautilus is in the search path
-nautilus --new-window --no-desktop file://$CWD &> /dev/null
+nohup nautilus --new-window --no-desktop file://$CWD &> /dev/null &
