@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# Assign help text to variable for user later
+HELP="Usage: mn2jpg [SOURCE] [DEST], where [SOURCE] is a MindNode file"
+NUMPARAMS="Error: Incorrect number of parameters"
+
+# If the user supplied no parameters, then provide help text
+if [ $# -eq 0 ]; then
+    echo $NUMPARAMS
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# If the user supplied "--help", then provide help text
+if [ $1 = "--help" ]; then
+    echo $HELP
+    echo
+    exit
+fi
+
+# Ensure that exactly 2 parameters were given
+# Display error message and help text otherwise
+if [ $# -ne 2 ]; then
+    echo $NUMPARAMS
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Check that source exists and is a normal file
+# Display error message otherwise
+if [ ! -f $1 ]; then
+    echo "Error: Invalid source file supplied"
+    echo
+    exit
+fi
+
+# Assign parameters to variables for use later
+SRC=$1
+DST=$2
+
+# Use unzip to extract the QuickLook preview file as a standalone JPG file
+# Assumes unzip is installed and in the path
+unzip -j -p "$SRC" QuickLook/Preview.jpg > "$DST"
