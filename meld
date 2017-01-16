@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# This is a wrapper for the "actual" Meld executable
+# It is designed to facilitate launching Meld from a command line
+
+# Launch actual Meld executable
+/usr/bin/meld "$@" &> /dev/null &

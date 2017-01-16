@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Assign help text to variable for user later
+HELP="Usage: mkdpf [SRC PRESENTATION] [DST PDF]"
+NUMPARAMS="Error: Incorrect number of parameters"
+
+# Assign variables to phantomjs and decktape.js locations;
+# adjust for your specific installation
+PHANTOMJS="/opt/decktape/phantomjs"
+DECKTAPE="/opt/decktape/decktape.js"
+
+# If the user supplied "--help", then provide help text
+if [ $1 = "--help" ]; then
+    echo $HELP
+    echo
+    exit
+fi
+
+# If the user supplied no parameters, then provide help text
+if [ $# -ne 2 ]; then
+    echo $NUMPARAMS
+    echo
+    echo $HELP
+    echo
+    exit
+fi
+
+# Check that source exists and is a normal file
+# Display error message otherwise
+if [ ! -f $1 ]; then
+    echo "Error: Invalid source file supplied"
+    echo
+    exit
+fi
+
+# Check that destination does not already exist
+if [ -f $2 ]; then
+    echo "Error: Destination file already exists"
+    echo
+    exit
+fi
+
+# Assign parameters to variables
+SRC=$1
+DST=$2
+
+# Use decktape to convert remark.js presentation to PDF
+$PHANTOMJS $DECKTAPE remark $SRC $DST
