@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Restart nm-applet
+
+# Kill the current nm-applet instance
+killall nm-applet
+
+# Launch nm-applet
+nohup /usr/bin/nm-applet &> /dev/null &
