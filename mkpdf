@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 
 # Assign help text to variable for user later
-HELP="Usage: mkdpf [SRC PRESENTATION] [DST PDF]"
+HELP="Usage: mkpdf [SRC PRESENTATION] [DST PDF]"
 NUMPARAMS="Error: Incorrect number of parameters"
 
 # Assign variables to phantomjs and decktape.js locations;
 # adjust for your specific installation
 PHANTOMJS="/opt/decktape/phantomjs"
 DECKTAPE="/opt/decktape/decktape.js"
+
+# If the user supplied no parameters, then provide help text
+if [ $# -eq 0 ]; then
+    echo $NUMPARAMS
+    echo
+    echo $HELP
+    echo
+    exit
+fi
 
 # If the user supplied "--help", then provide help text
 if [ $1 = "--help" ]; then
