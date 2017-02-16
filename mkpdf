@@ -6,7 +6,7 @@ NUMPARAMS="Error: Incorrect number of parameters"
 
 # Assign variables to phantomjs and decktape.js locations;
 # adjust for your specific installation
-PHANTOMJS="/opt/decktape/phantomjs"
+PHANTOMJS="/opt/decktape/phantomjs --ignore-ssl-errors=true"
 DECKTAPE="/opt/decktape/decktape.js"
 
 # If the user supplied no parameters, then provide help text
