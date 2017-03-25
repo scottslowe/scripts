@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Iterate through arguments to script
+for file in "$@"; do
+    ext="${file##*.}"
+    if [ "$ext" = "webloc" ]; then
+        url=$(xmllint --xpath "string(//string)" "$file")
+        nohup firefox --new-window "$url" &> /dev/null &
+    fi
+done
