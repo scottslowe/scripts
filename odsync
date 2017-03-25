@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Set location of odrive binary
+ODCMD="/opt/bin/odrive"
+
+# Test to ensure only a single parameter was passed
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of parameters"
+    exit
+fi
+
+# Test to ensure filename passed is a valid file
+if [ ! -f "$1" ]; then
+    echo "Error: Invalid file supplied"
+    exit
+fi
+
+# If file has .cloud extension, sync it
+ext="${1##*.}"
+if [ $ext == "cloud" ]; then
+    $ODCMD sync "$1"
+else
+    echo "Error: Not an odrive stub file"
+fi
