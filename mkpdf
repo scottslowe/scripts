@@ -10,7 +10,7 @@ PHANTOMJS="/opt/decktape/phantomjs --ignore-ssl-errors=true"
 DECKTAPE="/opt/decktape/decktape.js"
 
 # If the user supplied no parameters, then provide help text
-if [ $# -eq 0 ]; then
+if [ "$#" -eq 0 ]; then
     echo $NUMPARAMS
     echo
     echo $HELP
@@ -19,14 +19,14 @@ if [ $# -eq 0 ]; then
 fi
 
 # If the user supplied "--help", then provide help text
-if [ $1 = "--help" ]; then
+if [ "$1" = "--help" ]; then
     echo $HELP
     echo
     exit
 fi
 
 # If the user supplied no parameters, then provide help text
-if [ $# -ne 2 ]; then
+if [ "$#" -ne 2 ]; then
     echo $NUMPARAMS
     echo
     echo $HELP
@@ -36,22 +36,22 @@ fi
 
 # Check that source exists and is a normal file
 # Display error message otherwise
-if [ ! -f $1 ]; then
+if [ ! -f "$1" ]; then
     echo "Error: Invalid source file supplied"
     echo
     exit
 fi
 
 # Check that destination does not already exist
-if [ -f $2 ]; then
+if [ -f "$2" ]; then
     echo "Error: Destination file already exists"
     echo
     exit
 fi
 
 # Assign parameters to variables
-SRC=$1
-DST=$2
+SRC="$1"
+DST="$2"
 
 # Use decktape to convert remark.js presentation to PDF
-$PHANTOMJS $DECKTAPE remark $SRC $DST
+$PHANTOMJS $DECKTAPE remark "$SRC" "$DST"
