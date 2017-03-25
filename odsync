@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set location of odrive binary
-ODCMD="/opt/bin/odrive"
+ODCMD="~/.local/bin/odrive"
 
 # Test to ensure only a single parameter was passed
 if [ "$#" -ne 1 ]; then
@@ -20,5 +20,5 @@ ext="${1##*.}"
 if [ $ext == "cloud" ]; then
     $ODCMD sync "$1"
 else
-    echo "Error: Not an odrive stub file"
+    echo "Error: Not an odrive placeholder file"
 fi
