@@ -17,7 +17,7 @@ fi
 
 # If file has .cloud extension, sync it
 ext="${1##*.}"
-if [ $ext == "cloud" ]; then
+if [ "$ext" = "cloud" ]; then
     $ODCMD sync "$1"
 else
     echo "Error: Not an odrive placeholder file"
