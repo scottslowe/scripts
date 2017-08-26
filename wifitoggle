@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 # This is a macOS-specific shell script to toggle Wi-Fi power
-# Written and tested on Sierra (macOS 10.12.5)
+# Written and tested on Sierra (macOS 10.12.5 and 10.12.6)
 
-# Set Wi-Fi interface name (assumes en1)
-interface="en1"
+# Set full path to "networksetup" command
+NSCMD="/usr/sbin/networksetup"
+
+# Set Wi-Fi interface name (assumes en0)
+# Swap commented lines around if Wi-Fi interface is en1
+# IFACE="en1"
+IFACE="en0"
 
 # Get the current Wi-Fi power status using networksetup
-status=$(networksetup -getairportpower $interface)
+STATUS=$($NSCMD -getairportpower $IFACE | cut -d' ' -f4)
 
 # Evaluate current status and toggle power
-if [[ $status == *On ]]; then
-    networksetup -setairportpower $interface off
-else
-    networksetup -setairportpower $interface on
+if [[ $STATUS == 'On' ]]; then
+    $NSCMD -setairportpower $IFACE off
+elif [[ $STATUS == 'Off' ]]; then
+    $NSCMD -setairportpower $IFACE on
 fi
