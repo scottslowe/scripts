@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# This is a macOS-specific shell script to toggle Bluetooth power
+# Written and tested on Sierra (macOS 10.12.6)
+
+# Set full path to "blueutil" command
+BTCMD="/usr/local/bin/blueutil"
+
+# Get the current Bluetooth power status using blueutil
+STATUS=$($BTCMD status | cut -d' ' -f2)
+
+# Evaluate current status and toggle Bluetooth power
+if [[ $STATUS == 'on' ]]; then
+    $BTCMD off
+elif [[ $STATUS == 'off' ]]; then
+    $BTCMD on
+fi
