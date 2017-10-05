@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# This is a macOS-specific shell script to stop a Docker Machine
+# virtual machine, if it is currently running
+
+# Set full path to "docker-machine" command
+DMCMD="/usr/local/bin/docker-machine"
+
+# Check for correct parameters (exactly one VM name expected)
+if [ "$#" -ne 1 ]; then
+    echo "Incorrect number of parameters; please specify a single VM name"
+    exit 1
+fi
+
+# Set the name of the Docker Machine VM
+VM=$1
+
+# Get the current status of the specified Docker Machine VM
+# $STATUS will be zero-length if no matching VMs are found
+STATUS=$($DMCMD ls | grep "$VM\s" | awk '{print $4}')
+
+# If $STATUS is zero-length, report an error
+if [ -z $STATUS ]; then
+    echo "No matching Docker Machine VM found"
+    exit 1
+fi
+
+# Start Docker Machine VM if it is not already running
+if [[ $STATUS == 'Running' ]]; then
+    $DMCMD stop $VM
+fi
