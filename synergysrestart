@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Stop existing synergys process, if it exists
+if pgrep -x "synergys" > /dev/null 2>&1; then
+    echo "Stopping existing Synergy server process"
+    pkill -x "synergys"
+else
+    echo "No existing Synergy server process located"
+fi
+
+# Start new synergys instance
+echo "Starting new Synergy server process"
+/usr/local/bin/synergys -c /etc/synergy.conf
