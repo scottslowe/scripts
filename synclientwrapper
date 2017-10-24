@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Check for correct parameters (exactly one VM name expected)
+if [ "$#" -ne 1 ]; then
+    echo "Incorrect number of parameters; please specify 'start' or 'stop'"
+    exit 1
+fi
+
+# Set the name of the Docker Machine VM
+CMD=$1
+
+if [[ $CMD == "start" ]]; then
+    if pgrep -x "synergyc" > /dev/null 2>&1; then
+        echo "Synergy client already running"
+        exit 1
+    else
+        echo "Starting Synergy client"
+        /usr/local/bin/synergyc --yscroll 24 172.16.1.30
+    fi
+elif [[ $CMD == "stop" ]]; then
+    pkill -x "synergyc"
+else
+    echo "Unrecognized command given"
+fi
