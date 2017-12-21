@@ -6,9 +6,8 @@
 case "$OSTYPE" in
     darwin*)
         CMD="/usr/sbin/networksetup"
-        # Swap commented lines around if Wi-Fi interface is en1
-        # IFACE="en1"
-        IFACE="en0"
+        # Determine which interface is the Wi-Fi interface
+        IFACE=$($CMD -listallhardwareports | grep -A1 'Wi-Fi' | awk '/Device/ {print $2}')
         # Get the current Wi-Fi power status using networksetup
         STATUS=$($CMD -getairportpower $IFACE | cut -d' ' -f4)
         # Evaluate current status and toggle power
