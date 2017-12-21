@@ -5,7 +5,7 @@
 
 case "$OSTYPE" in
     darwin*)
-        CMD="/usr/bin/networksetup"
+        CMD="/usr/sbin/networksetup"
         # Swap commented lines around if Wi-Fi interface is en1
         # IFACE="en1"
         IFACE="en0"
