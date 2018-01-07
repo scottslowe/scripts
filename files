@@ -47,6 +47,11 @@ if [ ! -d "$CWD" ]; then
     exit
 fi
 
-# Open a Nautilus window at the current working directory
-# It is assumed that Nautilus is in the search path
-nohup nautilus --new-window --no-desktop file://$CWD &> /dev/null &
+# Open a filem manager window at the current working directory
+# Checks for macOS (Darwin) and uses open command;
+# otherwise, assumes Linux and Nautilus
+if [[ $(uname -a) == *Darwin* ]]; then
+    open $CWD
+else
+    nohup nautilus --new-window --no-desktop file://$CWD &> /dev/null &
+fi
