@@ -10,7 +10,7 @@ if [ "$#" -ne 1 ]; then
     echo
     echo $HELP
     echo
-    exit
+    exit 1
 fi
 
 # Assign CWD variable to the parameter supplied by the user;
@@ -18,35 +18,51 @@ fi
 if [ "$#" -eq 0 ]; then
     CWD=$(pwd)
 else
-    CWD=$1
+    CWD="$1"
 fi
 
 # If the user supplied "--help", then provide help text
 if [ "$CWD" = "--help" ]; then
     echo $HELP
     echo
-    exit
+    exit 0
 fi
 
-# Catch instances where user supplies "." as path (to open current directory)
-if [ "$CWD" = "." ]; then
-    CWD=$(pwd)
-fi
+# Try to catch special instances
+case "$CWD" in
+    '.') # User supplies "." to open current directory
+        CWD=$(pwd)
+        ;;
+    '..') # User supplies ".." to open parent directory
+        echo "Double-dot syntax is not yet supported; please supply path to parent directory"
+        echo
+        exit 1
+        ;;
+esac
 
-# Catch instances where user supplies ".." as path (to open parent directory)
-if [ "$CWD" = ".." ]; then
-    echo "Double-dot syntax not yet supported; please supply path to parent directory"
-    echo
-    exit
+# Check for case where user supplies a subdirectory of the current directory
+# (if parameter specified doesn't start with a slash it is assumed to be a
+# subdirectory of the current directory)
+testchar=$(echo "$CWD" | cut -c 1 -)
+if [ ! $testchar = '/' ]; then
+    CWD="$(pwd)/$CWD"
 fi
 
 # Check that the path supplied as a parameter is valid
 if [ ! -d "$CWD" ]; then
     echo "Invalid path specified; please provide a valid path"
     echo
-    exit
+    exit 1
 fi
 
-# Open a Nautilus window at the current working directory
-# It is assumed that Nautilus is in the search path
-nohup nautilus --new-window --no-desktop file://$CWD &> /dev/null &
+# Debugging
+#echo "$CWD"
+
+# Open a filem manager window at the specified directory
+# Checks for macOS (Darwin) and uses open command;
+# otherwise, assumes Linux/GNOME and presence of xdg-open command
+if [[ $(uname -a) == *Darwin* ]]; then
+    /usr/bin/open "$CWD"
+else
+    /usr/bin/xdg-open "$CWD"
+fi
