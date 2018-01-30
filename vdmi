@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Shell script to integrate Docker Machine with Vagrant
+# Intended to be run from a directory with a Vagrantfile
+# Assumes Vagrant environment is up
+
+# Test to make sure running in a Vagrant environment
+# (tests for presence of Vagrantfile)
+if [ ! -f ./Vagrantfile ]; then
+    echo "Error; must be run in a Vagrant environment"
+    echo
+    exit 1
+fi
+
+# Gets information about Vagrant environment
+CONFIG=$(vagrant ssh-config)
+VMNAME=$(echo $CONFIG | awk '{print $2}')
+VMIP=$(echo $CONFIG | awk '{print $4}')
+VMUSER=$(echo $CONFIG | awk '{print $6}')
+VMPORT=$(echo $CONFIG | awk '{print $8}')
+VMKEY=$(echo $CONFIG | awk '{print $16}')
+
+# Add Vagrant VM to Docker Machine
+docker-machine create -d generic \
+--generic-ssh-user $VMUSER \
+--generic-ssh-key $VMKEY \
+--generic-ssh-port $VMPORT \
+--generic-ip-address $VMIP \
+$VMNAME
