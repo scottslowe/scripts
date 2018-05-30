@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-# Check for correct parameters (exactly one VM name expected)
+# Check for correct parameters (exactly one sub-command expected)
 if [ "$#" -ne 1 ]; then
     echo "Incorrect number of parameters; please specify 'start' or 'stop'"
     exit 1
 fi
 
-# Set the name of the Docker Machine VM
+# Set the name of the sub-command
 CMD=$1
+
+# Get the path of the synergyc binary
+SYNCMD=`command -v synergyc`
 
 if [[ $CMD == "start" ]]; then
     if pgrep -x "synergyc" > /dev/null 2>&1; then
@@ -15,7 +18,7 @@ if [[ $CMD == "start" ]]; then
         exit 1
     else
         echo "Starting Synergy client"
-        /usr/local/bin/synergyc --yscroll 24 172.16.1.30
+        $SYNCMD --yscroll 24 172.16.1.30
     fi
 elif [[ $CMD == "stop" ]]; then
     pkill -x "synergyc"
