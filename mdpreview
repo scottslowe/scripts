@@ -3,6 +3,15 @@
 # Set help text to be displayed later as needed
 HELP="Usage: mdpmmd [MARKDOWN FILE]"
 
+# Locate the "multimarkdown" binary
+MMDCMD=$(command -v multimarkdown)
+
+# Check for presence of the "docker-machine" command
+if [ ! -x $MMDCMD ]; then
+    echo "Multimarkdown does not appear to be installed"
+    exit 1
+fi
+
 # Ensure that only a single parameter was passed
 # Display help text if more than 1 parameter was supplied
 if [ "$#" -ne 1 ]; then
@@ -29,12 +38,11 @@ if [ -f /tmp/$TMPFILE ]; then
 fi
 
 # Generate new Markdown preview file
-/opt/bin/multimarkdown --output=/tmp/$TMPFILE \
-    --to=html --full --smart "$1"
+$MMDCMD --output=/tmp/$TMPFILE --to=html --full "$1"
 
 # Open generated preview file in Firefox
 # Assumes firefox binary is in the path
-nohup firefox --new-window file:///tmp/$TMPFILE &> /dev/null &
+nohup /opt/firefox/firefox --new-window file:///tmp/$TMPFILE &> /dev/null &
 
-# Remove preview file after 15 seconds
-sleep 15; rm /tmp/$TMPFILE
+# Remove preview file after 5 seconds
+sleep 5; rm /tmp/$TMPFILE
