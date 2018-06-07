@@ -10,7 +10,7 @@ fi
 CMD=$1
 
 # Get the path of the synergyc binary
-SYNCMD=`command -v synergyc`
+SYNCMD=$(command -v synergyc)
 
 if [[ $CMD == "start" ]]; then
     if pgrep -x "synergyc" > /dev/null 2>&1; then
