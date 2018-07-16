@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Check for correct parameters (exactly one sub-command expected)
+if [ "$#" -ne 1 ]; then
+    echo "Incorrect number of parameters; please specify 'start' or 'stop'"
+    exit 1
+fi
+
+# Set the name of the sub-command
+CMD=$1
+
+# Get the path of the synergys binary
+SYNCMD=$(command -v synergys)
+
+if [[ $CMD == "start" ]]; then
+    if pgrep -x "synergys" > /dev/null 2>&1; then
+        echo "Synergy server already running"
+        exit 1
+    else
+        echo "Starting Synergy server"
+        $SYNCMD
+    fi
+elif [[ $CMD == "stop" ]]; then
+    pkill -x "synergys"
+else
+    echo "Unrecognized command given"
+fi
