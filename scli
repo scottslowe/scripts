@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# This is a shell script to add multi-team support to slack-cli
+# Written and tested on Fedora 28
+
+# Store values for various commands (allows for paths to vary across systems)
+OPCMD=$(command -v op)
+SLACK_CLI=$(command -v slack-cli)
+JQCMD=$(command -v jq)
+
+# Sign into 1Password
+eval $($OPCMD signin thelowefamily)
+
+# Pull first parameter as Slack team name and shift the remaining parameters
+TEAM="$1"; shift
+
+# Shift the parameters and capture the rest of them to pass to slack-cli
+PARAMS="$@"
+
+# Use the team name to retrieve the correct token
+case $TEAM in
+    ppi*)
+        echo "Packet Pushers Slack support not yet functional"
+        ;;
+    heptio*)
+        export SLACK_CLI_TOKEN=$($OPCMD get item "Heptio Slack Token" | $JQCMD -r '.details.password')
+        ;;
+    k8s*)
+        echo "Kubernetes Slack support not yet functional"
+        ;;
+esac
+
+# DEBUG: Echo captured values
+#echo $TEAM
+#echo $PARAMS
+#echo $SLACK_CLI_TOKEN
+
+# Invoke slack-cli
+$SLACK_CLI $PARAMS
