@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Set some variables that will be used later
+KUBEDIR="$HOME/.kube"
+KUBECFG="config"
+
+# Assign help text to variable for user later
+HELP="Usage: kcs [ context-name | none | list ]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of parameters; please supply only a valid Kubernetes context or valid command"
+    echo
+    echo $HELP
+    exit 1
+fi
+
+# If the user supplied "--help", then provide help text
+if [ "$1" = "--help" ]; then
+    echo $HELP
+    exit 0
+fi
+
+# Assign supplied parameter to variable for use later
+KCFG="$1"
+
+# If user specified 'none', then remove the file and exit the script cleanly
+if [ $KCFG == "none" ]; then
+    if [ ! -f $KUBEDIR/$KUBECFG ]; then
+        echo "No Kubernetes context active"
+        exit 0
+    else
+        rm $KUBEDIR/$KUBECFG
+        exit 0
+    fi
+fi
+
+# If user specified 'list', then list the files in the ~/.kube directory
+if [ $KCFG == "list" ]; then
+    echo $(ls -l "$KUBEDIR" | tail -n +2 | grep -v '^d' | awk '{print $9}')
+    exit 0
+fi
+
+# Check to ensure user supplied a valid filename of a file
+# in the ~/.kube directory
+if [ ! -f $KUBEDIR/$KCFG ]; then
+    echo "Invalid Kubernetes context specified; use 'kcs list' to see available contexts"
+    exit 1
+fi
+
+# Copy supplied filename to ~/.kube/config
+cp $KUBEDIR/$KCFG $KUBEDIR/$KUBECFG
