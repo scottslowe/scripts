@@ -26,28 +26,28 @@ fi
 KCFG="$1"
 
 # If user specified 'none', then remove the file and exit the script cleanly
-if [ $KCFG == "none" ]; then
-    if [ ! -f $KUBEDIR/$KUBECFG ]; then
+if [ "$KCFG" == "none" ]; then
+    if [ ! -f "$KUBEDIR/$KUBECFG" ]; then
         echo "No Kubernetes context active"
         exit 0
     else
-        rm $KUBEDIR/$KUBECFG
+        rm -f "$KUBEDIR/$KUBECFG"
         exit 0
     fi
 fi
 
 # If user specified 'list', then list the files in the ~/.kube directory
-if [ $KCFG == "list" ]; then
+if [ "$KCFG" == "list" ]; then
     echo $(ls -l "$KUBEDIR" | tail -n +2 | grep -v '^d' | awk '{print $9}')
     exit 0
 fi
 
 # Check to ensure user supplied a valid filename of a file
 # in the ~/.kube directory
-if [ ! -f $KUBEDIR/$KCFG ]; then
+if [ ! -f "$KUBEDIR/$KCFG" ]; then
     echo "Invalid Kubernetes context specified; use 'kcs list' to see available contexts"
     exit 1
 fi
 
 # Copy supplied filename to ~/.kube/config
-cp $KUBEDIR/$KCFG $KUBEDIR/$KUBECFG
+cp "$KUBEDIR/$KCFG" "$KUBEDIR/$KUBECFG"
