@@ -1,27 +1,60 @@
 #!/usr/bin/env bash
 
+# Set some default values to be used later
+SERVER="172.16.1.30"
+HELP="synclient [ start | stop | status ]"
+
 # Check for correct parameters (exactly one sub-command expected)
 if [ "$#" -ne 1 ]; then
-    echo "Incorrect number of parameters; please specify 'start' or 'stop'"
+    echo "Incorrect number of parameters; please specify a valid sub-command"
+    echo
+    echo $HELP
     exit 1
 fi
 
 # Set the name of the sub-command
 CMD=$1
 
-# Get the path of the synergyc binary
-SYNCMD=$(command -v synergyc)
+# Get the path of the synergy-core binary
+SYNCMD=$(command -v synergy-core)
 
-if [[ $CMD == "start" ]]; then
-    if pgrep -x "synergyc" > /dev/null 2>&1; then
-        echo "Synergy client already running"
+# Match against the supplied sub-command
+case $CMD in
+    start)
+        if pgrep -x "synergy-core" > /dev/null 2>&1; then
+            echo "Synergy is already running"
+            exit 1
+        else
+            echo "Starting Synergy..."
+            $SYNCMD --client --yscroll 24 $SERVER > /dev/null 2>&1
+            exit 0
+        fi
+        ;;
+    stop)
+        echo "Stopping Synergy..."
+        pkill -x "synergy-core" > /dev/null 2>&1
+        exit 0
+        ;;
+    status)
+        if pgrep -x "synergy-core" > /dev/null 2>&1; then
+            echo "Synergy is running"
+            exit 0
+        else
+            echo "Synergy is not running"
+            exit 0
+        fi
+        ;;
+    help)
+        echo $HELP
+        exit 0
+        ;;
+    --help)
+        echo $HELP
+        exit 0
+        ;;
+    *)
+        echo "Unrecognized sub-command"
+        echo
+        echo $HELP
         exit 1
-    else
-        echo "Starting Synergy client"
-        $SYNCMD --yscroll 24 172.16.1.30
-    fi
-elif [[ $CMD == "stop" ]]; then
-    pkill -x "synergyc"
-else
-    echo "Unrecognized command given"
-fi
+esac
