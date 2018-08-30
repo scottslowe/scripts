@@ -38,7 +38,7 @@ fi
 
 # If user specified 'list', then list the files in the ~/.kube directory
 if [ "$KCFG" == "list" ]; then
-    echo $(ls -l "$KUBEDIR" | tail -n +2 | grep -v '^d' | awk '{print $9}')
+    echo $(grep -lr ^clusters: $KUBEDIR | sed -e "s-$KUBEDIR/--")
     exit 0
 fi
 
