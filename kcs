@@ -45,7 +45,7 @@ case "$KCFG" in
         exit 0
         ;;
     # If user supplied 'config', report an error and exit with an error code
-    config)
+    "$KUBECFG")
         echo "Not a selectable Kubernetes context; use 'kcs list' to see available contexts"
         exit 1
         ;;
