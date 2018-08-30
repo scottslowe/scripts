@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 
 _kcs_completions()
 {
@@ -6,10 +6,8 @@ _kcs_completions()
   # Create list of possible completions
   # + none
   # - config
-  COMPREPLY=($(compgen -W "none $(kcs list | sed 's/^config //' )" "${COMP_WORDS[1]}"))
+  COMPREPLY=($(compgen -W "none list $(kcs list)" "${COMP_WORDS[1]}"))
 }
 
 # Allow dynamic recreation of completion list for kcs:
 complete -F _kcs_completions kcs
-
-
