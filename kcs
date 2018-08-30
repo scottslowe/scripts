@@ -25,29 +25,39 @@ fi
 # Assign supplied parameter to variable for use later
 KCFG="$1"
 
-# If user specified 'none', then remove the file and exit the script cleanly
-if [ "$KCFG" == "none" ]; then
-    if [ ! -f "$KUBEDIR/$KUBECFG" ]; then
-        echo "No Kubernetes context active"
+# Take action based on the input supplied by the user
+case "$KCFG" in
+    # If user supplied 'none', then remove default config file and exit cleanly
+    # Report an error if no active context
+    none)
+        if [ ! -f "$KUBEDIR/$KUBECFG" ]; then
+            echo "No active Kubernetes context"
+            exit 1
+        else
+            rm -f "$KUBEDIR/$KUBECFG"
+            exit 0
+        fi
+        ;;
+    # If user supplied 'list', then list files in the default directory but hide
+    # files matching the default config file name as defined earlier
+    list)
+        echo $(ls -l --hide="$KUBECFG" "$KUBEDIR" | tail -n +2 | grep -v '^d' | awk '{print $9}')
         exit 0
-    else
-        rm -f "$KUBEDIR/$KUBECFG"
-        exit 0
-    fi
-fi
-
-# If user specified 'list', then list the files in the ~/.kube directory
-if [ "$KCFG" == "list" ]; then
-    echo $(ls -l "$KUBEDIR" | tail -n +2 | grep -v '^d' | awk '{print $9}')
-    exit 0
-fi
-
-# Check to ensure user supplied a valid filename of a file
-# in the ~/.kube directory
-if [ ! -f "$KUBEDIR/$KCFG" ]; then
-    echo "Invalid Kubernetes context specified; use 'kcs list' to see available contexts"
-    exit 1
-fi
-
-# Copy supplied filename to ~/.kube/config
-cp "$KUBEDIR/$KCFG" "$KUBEDIR/$KUBECFG"
+        ;;
+    # If user supplied 'config', report an error and exit with an error code
+    config)
+        echo "Not a selectable Kubernetes context; use 'kcs list' to see available contexts"
+        exit 1
+        ;;
+    # If the user supplied anything else, check to see if it is a valid config file
+    # If it is a valid config file, copy it to the default config file
+    # Otherwise, report an error and exit with an error code
+    *)
+        if [ -f "$KUBEDIR/$KCFG" ]; then
+            cp "$KUBEDIR/$KCFG" "$KUBEDIR/$KUBECFG"
+            exit 0
+        else
+            echo "Invalid Kubernetes context; use 'kcs list' to see available contexts"
+            exit 1
+        fi
+esac
