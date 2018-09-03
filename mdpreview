@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # Set help text to be displayed later as needed
-HELP="Usage: mdpmmd [MARKDOWN FILE]"
+HELP="Usage: mdpreview [MARKDOWN FILE]"
 
 # Locate the "multimarkdown" binary
 MMDCMD=$(command -v multimarkdown)
 
-# Check for presence of the "docker-machine" command
+# Check for presence of the "multimarkdown" command
 if [ ! -x $MMDCMD ]; then
-    echo "Multimarkdown does not appear to be installed"
+    echo "MultiMarkdown does not appear to be installed"
     exit 1
 fi
 
@@ -18,15 +18,13 @@ if [ "$#" -ne 1 ]; then
     echo "Error: Incorrect number of parameters. Please supply only a single file name."
     echo
     echo $HELP
-    echo
     exit 1
 fi
 
 # Check to see if the user supplied "--help"
 if [ "$1" = "--help" ]; then
     echo $HELP
-    echo
-    exit
+    exit 0
 fi
 
 # Generate a temp file
