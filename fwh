@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Set some variables that will be used later
+FFPROFILE="$HOME/.mozilla/firefox/pw7z9ojm.default"
+HISTORY="$FFPROFILE/places.sqlite"
+SEP="::::"
+SQLCMD="$(command -v sqlite3) -separator $SEP"
+QUERY="SELECT title,url from moz_places order by last_visit_date"
+
+# Get the Firefox history
+#cp $HISTORY /tmp/h
+$SQLCMD $HISTORY "$QUERY" | fzf | sed 's/^.*:::://g' | xargs xdg-open
+#rm /tmp/h
