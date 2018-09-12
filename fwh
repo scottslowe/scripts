@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# Set this to the correct location for the default Firefox profile
+FFPROFILE="$HOME/.mozilla/firefox/pw7z9ojm.default"
+
+# Set the location of the history database
+HISTORY="$FFPROFILE/places.sqlite"
+
+# Verify the history file exists; exit if not found
+if [ ! -f $HISTORY ]; then
+    echo "Firefox history file not found"
+    exit 1
+fi
+
+# Check to see if user requested help text
+# Exit if any other command-line parameters supplied
+if [ "$#" -eq 1 ]; then
+    if [ "$1" = "--help" ]; then
+        echo "Usage: fwh [--help]"
+        exit 0
+    else
+        echo "Incorrect parameter supplied";
+        exit 1
+    fi
+else
+    if [ "$#" -ne 0 ]; then
+        echo "Wrong number of parameters supplied"
+        exit 1
+    fi
+fi
+
+# Build the SQLite query to pull data from the history database
+SEP=":::"
+SQLCMD="$(command -v sqlite3) -separator $SEP"
+QUERY="SELECT title,url from moz_places order by last_visit_date"
+
+# Use the values defined so far to query the database, format it,
+# and feed it to fzf for the user to select
+$SQLCMD $HISTORY "$QUERY" | \
+awk -F $SEP '{printf "%-30s \x1b[36m%s\x1b[m\n", $1, $2}' | \
+$(command -v fzf) --ansi | sed 's#.*\(https*://\)#\1#' | xargs xdg-open
