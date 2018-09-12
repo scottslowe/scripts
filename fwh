@@ -36,6 +36,6 @@ QUERY="SELECT title,url from moz_places order by last_visit_date"
 
 # Use the values defined so far to query the database, format it,
 # and feed it to fzf for the user to select
-$SQLCMD $HISTORY "$QUERY" | \
+$SQLCMD $HISTORY "$QUERY" | uniq | \
 awk -F $SEP '{printf "%-30s \x1b[36m%s\x1b[m\n", $1, $2}' | \
 $(command -v fzf) --ansi | sed 's#.*\(https*://\)#\1#' | xargs xdg-open
