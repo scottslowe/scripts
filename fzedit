@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Source this file or add the code below to your Bash startup files
+fzedit() {
+    local file
+
+    file=$(rg -ilF "$@" | fzf -0 -1 | awk -F: '{print $1}')
+
+    if [[ -n $file ]]; then
+        /usr/bin/code -n $file
+    fi
+}
