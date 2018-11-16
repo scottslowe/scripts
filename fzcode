@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Assign help text to variable for use later
+HELP="Usage: fzcode [TEXT TO SEARCH FOR]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of parameters, please supply a single parameter"
+    echo $HELP
+    exit 1
+fi
+
+# If the user supplied "--help" then provide help text
+if [ "$@" = "--help" ]; then
+    echo $HELP
+    exit 0
+fi
+
+# Use rg to find files with the specified text and open selected file in VS Code
+#code $(rg -ilF "$@" | fzf --preview="cat {}" --preview-window=right:70%:wrap)
+
+# Less fancy version with no preview
+code $(rg -ilF "$@" | fzf)
