@@ -26,7 +26,7 @@ case $CMD in
             exit 1
         else
             echo "Starting Synergy..."
-            $SYNCMD --client --yscroll 24 $SERVER > /dev/null 2>&1
+            $SYNCMD --client $SERVER > /dev/null 2>&1
             exit 0
         fi
         ;;
