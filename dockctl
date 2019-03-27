@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# This is a shell script to automate "docking" and "undocking" Linux laptop
+# Written and tested on Fedora 28
+
+# Assign help text to variable for user later
+HELP="Usage: dockctl [ dock | undock ]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of parameters; please supply only a single subcommand"
+    echo $HELP
+    exit 1
+fi
+
+# Check for existence of and get path for wifictl if present
+if hash wifictl 2>/dev/null; then
+    WIFICMD="$(command -v wifictl)"
+else
+    echo "wifictl is required but not found, aborting"
+    exit 1
+fi
+
+# Check for existence of and get path for synclient if present
+if hash synclient 2>/dev/null; then
+    SYNCMD="$(command -v synclient)"
+else
+    echo "synclient is required but not found, aborting"
+    exit 1
+fi
+
+# Take action based on subcommand provided by the user
+case "$1" in
+    dock)
+        # Turn Wi-Fi interface off using wifictl
+        $WIFICMD off
+        # Start Synergy client
+        $SYNCMD start > /dev/null 2>&1
+        ;;
+    undock)
+        # Turn Wi-Fi interface off
+        $WIFICMD on
+        # Stop Synergy client
+        $SYNCMD stop > /dev/null 2>&1
+        ;;
+    help)
+        echo $HELP
+        exit 0
+        ;;
+    --help)
+        echo $HELP
+        exit 0
+        ;;
+    *)
+        # Present an error about an unsupported subcommand
+        echo "Unknown subcommand provided"
+        echo $HELP
+        exit 1
+        ;;
+esac
