@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This is a shell script to control Wi-Fi radio power
-# Written and tested and Fedora 28
+# Written and tested on Fedora 28 and macOS 10.12.6
 
 # Assign help text to variable for user later
 HELP="Usage: wifictl [ on | off | toggle | status ]"
