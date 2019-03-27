@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# This is a shell script to control Wi-Fi radio power
+# Written and tested and Fedora 28
+
+# Assign help text to variable for user later
+HELP="Usage: wifictl [ on | off | toggle | status ]"
+
+# Ensure that only a single parameter was passed
+# Display help text if more than 1 parameter was supplied
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of parameters; please supply only a valid path"
+    echo $HELP
+    exit 1
+fi
+
+# If the user supplied "--help", then provide help text
+if [ "$1" = "--help" ]; then
+    echo $HELP
+    echo
+    exit 0
+fi
+
+# Determine OS type and set OS-specific values
+case "$OSTYPE" in
+    darwin*)
+        # Set the base command for interacting with network configuration
+        BASECMD="/usr/sbin/networksetup"
+        # Determine which interface is the Wi-Fi interface
+        IFACE=$($BASECMD -listallhardwareports | grep -A1 'Wi-Fi' | awk '/Device/ {print $2}')
+        # Get the current Wi-Fi power status using networksetup
+        OS_STATUS=$($BASECMD -getairportpower $IFACE | cut -d' ' -f4)
+        # Set the final command to run
+        CMD="$BASECMD -setairportpower $IFACE"
+        # Get OS-specific status and assign to generic status variable
+        if [[ $OS_STATUS == 'On' ]]; then
+            STATUS="enabled"
+        elif [[ $OS_STATUS == 'Off' ]]; then
+            STATUS="disabled"
+        fi
+        ;;
+    linux*)
+        # Set the base command for interacting with network configuration
+        BASECMD="/usr/bin/nmcli"
+        # Get the current Wi-Fi power status using nmcli
+        OS_STATUS=$($BASECMD radio wifi)
+        # Set final command to run
+        CMD="$BASECMD radio wifi"
+        # Assign OS-specific status to generic status variable
+        STATUS="$OS_STATUS"
+        ;;
+    *)
+        # Present an error about an unsupported OS
+        echo "Not supported on this operating system"
+        exit 1
+        ;;
+esac
+
+# Take action based on subcommand provided by the user
+case "$1" in
+    on)
+        # Turn Wi-Fi interface on
+        $CMD on
+        ;;
+    off)
+        # Turn Wi-Fi interface off
+        $CMD off
+        ;;
+    toggle)
+        # Evaluate current status and toggle it
+        if [[ $STATUS == 'enabled' ]]; then
+            $CMD off
+        else
+            $CMD on
+        fi
+        ;;
+    status)
+        # Report the value of the generic status variable
+        echo "$STATUS"
+        ;;
+    *)
+        # Present an error about an unsupported subcommand
+        echo "Unsupported subcommand provided"
+        echo $HELP
+        exit 1
+        ;;
+esac
