@@ -1,24 +1,33 @@
 #!/usr/bin/env bash
+# This is a shell script to start and stop the Synergy client
+# Written and tested on Fedora 28
 
 # Set some default values to be used later
+# Set this IP address to the IP address of the system running Synergy server
 SERVER="172.16.1.30"
+
+# Set some help text to be displayed if needed
 HELP="synclient [ start | stop | status ]"
 
 # Check for correct parameters (exactly one sub-command expected)
 if [ "$#" -ne 1 ]; then
-    echo "Incorrect number of parameters; please specify a valid sub-command"
-    echo
+    echo "Incorrect number of parameters; please provide exactly one valid subcommand"
     echo $HELP
     exit 1
 fi
 
-# Set the name of the sub-command
+# Set the name of the subcommand supplied by the user
 CMD=$1
 
-# Get the path of the synergy-core binary
-SYNCMD=$(command -v synergy-core)
+# Check for existence of synergy-core and get path if present
+if hash synergy-core 2>/dev/null; then
+    SYNCMD=$(command -v synergy-core)
+else
+    echo "synergy-core is required but not found, aborting"
+    exit 1
+fi
 
-# Match against the supplied sub-command
+# Match against the supplied subcommand
 case $CMD in
     start)
         if pgrep -x "synergy-core" > /dev/null 2>&1; then
@@ -53,8 +62,7 @@ case $CMD in
         exit 0
         ;;
     *)
-        echo "Unrecognized sub-command"
-        echo
+        echo "Unrecognized subcommand"
         echo $HELP
         exit 1
 esac
