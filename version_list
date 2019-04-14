@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Output the linked binaries for each symbolic link in /opt/bin
+echo "$(ls -la /opt/bin | awk '/->/ {print $11}' | xargs basename -a)"
