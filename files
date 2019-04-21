@@ -34,9 +34,7 @@ case "$CWD" in
         CWD=$(pwd)
         ;;
     '..') # User supplies ".." to open parent directory
-        echo "Double-dot syntax is not yet supported; please supply path to parent directory"
-        echo
-        exit 1
+        CWD=$(dirname $(pwd))
         ;;
 esac
 
@@ -58,7 +56,7 @@ fi
 # Debugging
 #echo "$CWD"
 
-# Open a filem manager window at the specified directory
+# Open a file manager window at the specified directory
 # Checks for macOS (Darwin) and uses open command;
 # otherwise, assumes Linux/GNOME and presence of xdg-open command
 if [[ $(uname -a) == *Darwin* ]]; then
