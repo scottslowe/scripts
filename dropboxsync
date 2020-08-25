@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# This is a shell script to use rclone to keep local machine and Dropbox in sync
+
+# Set full path to "rclone" command
+CMD=$(command -v rclone)
+
+# Check for presence of the "docker-machine" command
+if [[ ! -x $CMD ]]; then
+    echo "rclone does not appear to be installed; please install it before running this script"
+    exit 1
+fi
+
+# Check for presence of ~/Dropbox directory; fail if not present
+if [[ ! -d "$HOME/Dropbox" ]]; then
+    echo "The Dropbox folder is not present; please create it before running this script"
+    exit 1
+fi
+
+# Pull down changes from Dropbox
+echo "Pulling down changes from Dropbox..."
+"$CMD" sync dropbox:/ ~/Dropbox/ --progress --create-empty-src-dirs
+
+# Push changes up to Dropbox
+echo "Pushing changes up to Dropbox..."
+"$CMD" sync ~/Dropbox/ dropbox:/ --progress --create-empty-src-dirs
