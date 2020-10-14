@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# This is a Bash script to create a Docker context that corresponds to 
+# the specified Docker Machine created/managed by docker-machine
+# It is a context replacement for `eval $(docker-machine env name)`
+
+# Test for sane inputs
+if [ "$#" -ne 1 ]; then
+    echo "Incorrect number of parameters; please provide only the name of a machine to use to create a context"
+    exit 1
+fi
+
+# Set the name of the machine against which the script will operate
+MACHINE=$1
+
+# Set full path to "docker-machine" command; error if not available
+DM=$(command -v docker-machine)
+if [ -z $DM ]; then
+    echo "Can't find docker-machine; exiting..."
+    exit 1
+fi
+
+# Set full path to "docker" command; error if not available
+DCLI=$(command -v docker)
+if [ -z $DCLI ]; then
+    echo "Can't find Docker CLI; exiting..."
+    exit 1
+fi
+
+# Test to see if specified Docker Machine exists
+TEST=$($DM ls --format '{{ .Name }}' | grep $MACHINE -)
+if [ -z $TEST ]; then
+    echo "Can't find specified machine; exiting..."
+    exit 1
+fi
+
+# Check for name collision with existing Docker context
+TEST=$($DCLI context ls --format '{{ .Name }}' | grep $MACHINE -)
+if [ ! -z $TEST ]; then
+    echo "Docker context with that name already exists; exiting..."
+    exit 1
+fi
+
+# Gather the necessary information about the machine
+IPADDR=$($DM inspect $MACHINE --format '{{ .Driver.IPAddress }}')
+CA=$($DM inspect $MACHINE --format '{{ .HostOptions.AuthOptions.CaCertPath }}')
+CERT=$($DM inspect $MACHINE --format '{{ .HostOptions.AuthOptions.ClientCertPath }}')
+KEY=$($DM inspect $MACHINE --format '{{ .HostOptions.AuthOptions.ClientKeyPath }}')
+
+# Create the context
+$DCLI context create $MACHINE \
+--description "Docker context for $MACHINE" \
+--docker "host=tcp://$IPADDR:2376,ca=$CA,cert=$CERT,key=$KEY"
