@@ -9,6 +9,11 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+if [ "$1" = "--help" ]; then
+    echo "Usage: dmcontext <name-of-machine-created-by-docker-machine>"
+    exit 0
+fi
+
 # Set the name of the machine against which the script will operate
 MACHINE=$1
 
