@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Check to be sure exactly one argument has been passed
+if [ "$#" -ne 1 ]; then
+    exit 1
+fi
+
+# Launch the AppleScript and pass the argument
+/usr/bin/osascript ./open-safari-private.scpt "$1"
