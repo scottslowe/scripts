@@ -4,17 +4,17 @@
 
 # Set some variables for use later
 ZKUID="$(date +%Y%m%d%H%M%S)"
-ZKPATH="$HOME/Sync/Zettelkasten"
-HELP="Usage: zk [ new | search | edit | open ]"
+ZKPATH="${HOME}/Sync/Zettelkasten"
+HELP="Usage: zk [ new | name-search | body-search | open ]"
 
 # If the user supplied "--help", then provide help text
 if [ "$1" = "--help" ]; then
-    echo -e "$HELP\n"
+    echo -e "${HELP}\n"
     exit 0
 fi
 
 # Set certain OS-specific variables
-case "$OSTYPE" in
+case "${OSTYPE}" in
     darwin*)
         CODE="/usr/local/bin/code"
         ;;
@@ -30,7 +30,7 @@ esac
 # Test to ensure the user passed at least one parameter (the subcommand)
 if [ ! "$#" -ge 1 ]; then
     echo -e "No valid subcommand was provided, exiting\n"
-    echo $HELP
+    echo -e "${HELP}\n"
     exit 1
 fi
 
@@ -38,55 +38,60 @@ fi
 SUBCMD="$1"
 
 # Switch into the Zettelkasten directory for the remainder of the script
-cd "$ZKPATH"
+cd "${ZKPATH}"
 
 # Take action based on commands and parameters provided by the user
-case "$SUBCMD" in
+case "${SUBCMD}" in
     new)
         # Test to ensure the user passed a name parameter
         if [ "$#" -ne 2 ]; then
             echo -e "An invalid name was specified for the new zettel, exiting\n"
-            echo -e "Usage: zk new [name-of-zettel]"
+            echo -e "Usage: zk new [name-of-new-zettel]\n"
             exit 1
         fi
         # Parse out the command line further
         NAME="$2"
+        if [ "${NAME}" = "--help" ]; then
+            echo -e "Usage: zk new [name-of-new-zettel]\n"
+            echo -e "It is recommended to use hyphens to separate words in the name of the zettel;\nfor example, 'name-of-new-zettel'\n"
+            exit 1
+        fi
         # Calculate correct file name
-        ZETTELNAME="$ZKUID-$NAME.md"
+        ZETTELNAME="${ZKUID}-${NAME}.md"
         # Create file with initial contents
-        touch "$ZETTELNAME"
-        echo "$ZKUID-$NAME" >> "$ZETTELNAME"
+        touch "${ZETTELNAME}"
+        echo "${ZKUID}-${NAME}" >> "${ZETTELNAME}"
         # Pass off to the editor
-        $CODE "$ZKPATH/$ZETTELNAME"
+        $CODE "${ZKPATH}/${ZETTELNAME}"
         ;;
-    search)
-        # Test to ensure the user passed only the search subcommand
+    name-search)
+        # Test to ensure the user passed only the "name-search" subcommand
         if [ "$#" -ne 1 ]; then
-            echo -e "Only the search subcommand should be provided\n"
-            echo -e "Usage: zk search"
+            echo -e "Only the 'name-search' subcommand should be provided\n"
+            echo -e "Usage: zk name-search\n"
             exit 1
         fi
         # Use fd to list all files, pass that to fzf, and then open in editor
-        fd -t f . "$ZKPATH" | fzf | xargs bat
+        fd -t f . "${ZKPATH}" | fzf | xargs code "${ZKPATH}" -g
         ;;
-    edit)
-        # Test to ensure the user passed only the edit subcommand
+    body-search)
+        # Test to ensure the user passed only the "body-search" subcommand
         if [ "$#" -ne 1 ]; then
-            echo -e "Only the edit subcommand should be provided\n"
-            echo -e "Usage: zk edit"
+            echo -e "Only the 'body-search' subcommand should be provided\n"
+            echo -e "Usage: zk body-search\n"
             exit 1
         fi
-        # Use fd to list all files, pass that to fzf, and then open in editor
-        fd -t f . "$ZKPATH" | fzf | xargs code "$ZKPATH" -g
+        # Use rg to find all files, pass that to fzf, and then open in editor
+        rg --files-with-matches . | fzf | xargs code "${ZKPATH}" -g
         ;;
     open)
         # Open the Zettelkasten folder in the editor
-        $CODE "$ZKPATH"
+        ${CODE} "${ZKPATH}"
         ;;
     *)
         # Present an error about an unsupported subcommand
         echo -e "No valid subcommand was provided, exiting\n"
-        echo -e "$HELP\n"
+        echo -e "${HELP}\n"
         exit 1
         ;;
 esac
