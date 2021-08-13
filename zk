@@ -62,7 +62,7 @@ case "${SUBCMD}" in
         touch "${ZETTELNAME}"
         echo "${ZKUID}-${NAME}" >> "${ZETTELNAME}"
         # Pass off to the editor
-        $CODE "${ZKPATH}/${ZETTELNAME}"
+        $CODE "${ZKPATH}" -g "${ZETTELNAME}"
         ;;
     name-search)
         # Test to ensure the user passed only the "name-search" subcommand
