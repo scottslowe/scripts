@@ -88,6 +88,27 @@ case "${SUBCMD}" in
         # Open the Zettelkasten folder in the editor
         ${CODE} "${ZKPATH}"
         ;;
+    preview)
+        # Test to ensure the user passed only the "preview" command
+        if [ "$#" -ne 1 ]; then
+            echo -e "Only the 'preview' subcommand should be provided\n"
+            echo -e "Usage: zk preview\n"
+            exit 1
+        fi
+        # Take action based on the OS
+        case "${OSTYPE}" in
+            darwin*)
+                fd -t f . "${ZKPATH}" | fzf | xargs open -b com.brettterpstra.marked2
+                ;;
+            linux*)
+                fd -t f . "${ZKPATH}" | fzf | xargs bat
+                ;;
+            *)
+                echo -e "This script is not supported on this operating system\n"
+                exit 1
+                ;;
+        esac
+        ;;
     *)
         # Present an error about an unsupported subcommand
         echo -e "No valid subcommand was provided, exiting\n"
