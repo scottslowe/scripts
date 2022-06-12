@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# This is a wrapper for the "actual" Meld executable
+# This is a wrapper for the Meld Flatpak
 # It is designed to facilitate launching Meld from a command line
 
-# Launch actual Meld executable
-nohup /usr/bin/meld "$@" &> /dev/null &
+# Launch Meld Flatpak
+# nohup /usr/bin/meld "$@" &> /dev/null &
+flatpak run --file-forwarding org.gnome.Meld @@u "$@" @@ &> /dev/null
