@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# This is a shell script to automate the process of creating day-based
+# journal/diary entries
+
+# Set some variables for use later
+JRNLUID="$(date +%F)"
+JRNLPATH="${HOME}/Sync/Journal"
+FULLDATE="$(date '+%A, %B %d %Y')"
+ENTRYTIME="$(date '+%I:%M %p')"
+
+# Define some help text
+# TODO: Expand the help text
+HELP="Usage: jrnl new|edit"
+
+# If the user supplied "--help", then provide help text
+if [ "$1" = "--help" ]; then
+    echo -e "${HELP}\n"
+    exit 0
+fi
+
+# Set certain OS-specific variables
+# TODO: Add support for other editors
+case "${OSTYPE}" in
+    darwin*)
+        CODE="/usr/local/bin/code"
+        ;;
+    linux*)
+        CODE="/usr/bin/code"
+        ;;
+    *)
+        echo -e "This script is not supported on this operating system\n"
+        exit 1
+        ;;
+esac
+
+# Test to ensure the user passed at least one parameter (the subcommand)
+if [ ! "$#" -ge 1 ]; then
+    echo -e "No valid subcommand was provided, exiting\n"
+    echo -e "${HELP}\n"
+    exit 1
+fi
+
+# Parse the command line to get the subcommand
+SUBCMD="$1"
+
+# Switch into the journal directory for the remainder of the script
+cd "${JRNLPATH}"
+
+# Use the subcommand to either create a new entry or edit an existing entry
+case "${SUBCMD}" in
+    new)
+        # Check to see if a file already exists for today
+        # If not, create new file and populate with initial content
+        # If so, append time as new heading for new entry
+        JRNLNAME="${JRNLUID}.md"
+        if [ -f "${JRNLPATH}/${JRNLNAME}" ]; then
+            # Echo the current time to the existing file, and open it in Code
+            echo -e "\n" >> "${JRNLNAME}"
+            echo -e "\n## ${ENTRYTIME}" >> "${JRNLNAME}"
+            ${CODE} "${JRNLPATH}" -g "${JRNLNAME}"
+        else
+            # Create the file, populate with initial info, and open it in Code
+            touch "${JRNLNAME}"
+            echo -e "# Journal Entry for ${FULLDATE}\n" >> "${JRNLNAME}" 
+            echo -e "## ${ENTRYTIME}\n" >> "${JRNLNAME}"
+            ${CODE} "${JRNLPATH}" -g "${JRNLNAME}":5
+        fi
+        ;;
+    edit)
+        ${CODE} "${JRNLPATH}"
+        ;;
+esac
