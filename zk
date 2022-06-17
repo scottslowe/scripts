@@ -46,13 +46,13 @@ case "${SUBCMD}" in
         # Test to ensure the user passed a name parameter
         if [ "$#" -ne 2 ]; then
             echo -e "An invalid name was specified for the new zettel, exiting\n"
-            echo -e "Usage: zk new [name-of-new-zettel]\n"
+            echo -e "Usage: zk new name-of-new-zettel\n"
             exit 1
         fi
         # Parse out the command line further
         NAME="$2"
         if [ "${NAME}" = "--help" ]; then
-            echo -e "Usage: zk new [name-of-new-zettel]\n"
+            echo -e "Usage: zk new name-of-new-zettel\n"
             echo -e "It is recommended to use hyphens to separate words in the name of the zettel;\nfor example, 'name-of-new-zettel'\n"
             exit 1
         fi
@@ -76,13 +76,14 @@ case "${SUBCMD}" in
         ;;
     body-search)
         # Test to ensure the user passed only the "body-search" subcommand
-        if [ "$#" -ne 1 ]; then
-            echo -e "Only the 'body-search' subcommand should be provided\n"
-            echo -e "Usage: zk body-search\n"
+        if [ "$#" -ne 2 ]; then
+            echo -e "A search term should be provided with the 'body-search' subcommand\n"
+            echo -e "Usage: zk body-search search-term\n"
             exit 1
         fi
         # Use rg to find all files, pass that to fzf, and then open in editor
-        rg --files-with-matches . | fzf | xargs code "${ZKPATH}" -g
+        TERM="$2"
+        rg --files-with-matches "${TERM}" | fzf | xargs code "${ZKPATH}" -g
         ;;
     open)
         # Open the Zettelkasten folder in the editor
