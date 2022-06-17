@@ -4,4 +4,4 @@
 
 # Launch Meld Flatpak
 # nohup /usr/bin/meld "$@" &> /dev/null &
-flatpak run --file-forwarding org.gnome.Meld @@u "$@" @@ &> /dev/null
+flatpak run --file-forwarding org.gnome.Meld @@u "$@" @@ &> /dev/null &
