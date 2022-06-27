@@ -61,12 +61,30 @@ case "${SUBCMD}" in
         else
             # Create the file, populate with initial info, and open it in Code
             touch "${JRNLNAME}"
-            echo -e "# Journal Entry for ${FULLDATE}\n" >> "${JRNLNAME}" 
+            echo -e "# Journal Entries for ${FULLDATE}\n" >> "${JRNLNAME}" 
             echo -e "## ${ENTRYTIME}\n" >> "${JRNLNAME}"
             ${CODE} "${JRNLPATH}" -g "${JRNLNAME}":5
         fi
         ;;
     edit)
         ${CODE} "${JRNLPATH}"
+        ;;
+    old)
+        USERDATE="$2"
+        FILEDATE="$(date '+%F' -d ${USERDATE})"
+        OLDENTRYDATE="$(date '+%A, %B %d %Y' -d ${USERDATE})"
+        USERTIME="$3"
+        OLDENTRYTIME="$(date '+%I:%M %p' -d ${USERTIME})"
+        JRNLNAME="${FILEDATE}.md"
+        if [ -f "${JRNLPATH}/${JRNLNAME}" ]; then
+            # Echo an error; an entry already exists for this date
+            echo -e "An entry already exists for this date, exiting\n"
+            exit 1
+        else
+            touch "${JRNLNAME}"
+            echo -e "# Journal Entries for ${OLDENTRYDATE}\n" >> "${JRNLNAME}" 
+            echo -e "## ${OLDENTRYTIME}\n" >> "${JRNLNAME}"
+            ${CODE} "${JRNLPATH}" -g "${JRNLNAME}":5
+        fi
         ;;
 esac
