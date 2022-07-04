@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Check for yq executable; error if not found
+YQCMD=$(command -v yq)
+if [[ ! -x "${YQCMD}" ]]; then
+    echo -e "The `yq` executable was not found; please install it or move it into your PATH\n"
+    exit 1
+fi
+
+# Make sure the KUBECONFIG environment variable is defined
+if [[ -z "$KUBECONFIG" ]]; then
+    echo -e "No valid KUBECONFIG defined\n"
+    exit 1
+fi
+
+# Get the Kubernetes API endpoint of the first cluster in the current KUBECONFIG
+KAEP=$(yq e '.clusters[0].cluster.server' "${KUBECONFIG}")
+
+# Display the value to the user
+echo -e "The current Kubernetes API endpoint is: ${KAEP}\n"
