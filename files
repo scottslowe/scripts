@@ -62,5 +62,5 @@ fi
 if [[ $(uname -a) == *Darwin* ]]; then
     /usr/bin/open "$CWD"
 else
-    /usr/bin/xdg-open "$CWD"
+    /usr/bin/xdg-open "$CWD" 2>/dev/null 1>/dev/null
 fi
