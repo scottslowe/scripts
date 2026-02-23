@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# This is a shell script to create a "lightweight" KVM
+# Uses Solaar to switch keyboard and mouse between computers
+
+# Define some variables for later
+HELP="Usage: lkvm [ host ]"
+
+# If the user supplied "--help" or "-h", then provide help text
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    echo -e "${HELP}\n"
+    exit 0
+fi
+
+# Test to ensure the user passed exactly one parameter (the host to switch to)
+if [ "$#" -gt 1 ] || [ "$#" -lt 1 ]; then
+    echo -e "Incorrect number of parameters supplied; supply only the host name\n"
+    echo -e "${HELP}\n"
+    exit 1
+fi
+
+# Make sure Solaar is present; present an error if not
+if ! [ -x "$(command -v solaar)" ]; then
+    echo -e "It appears that Solaar is not installed or not in the PATH\n"
+    exit 1
+fi
+
+# Parse the command line to get the host
+HOST="$1"
+
+# Switch to the specified host using Solaar
+solaar config "Wireless Keyboard ERGO K860" change-host "${HOST}"
+solaar config "MX Vertical Wireless Mouse" change-host "${HOST}"
