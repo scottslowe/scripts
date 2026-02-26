@@ -30,3 +30,6 @@ HOST="$1"
 # Switch to the specified host using Solaar
 solaar config "Wireless Keyboard ERGO K860" change-host "${HOST}"
 solaar config "MX Vertical Wireless Mouse" change-host "${HOST}"
+
+# Display a notification
+notify-send "Keyboard and mouse switched to ${HOST}"
