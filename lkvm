@@ -11,9 +11,9 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     exit 0
 fi
 
-# Test to ensure the user passed exactly one parameter (the host to switch to)
-if [ "$#" -gt 1 ] || [ "$#" -lt 1 ]; then
-    echo -e "Incorrect number of parameters supplied; supply only the host name\n"
+# Test to ensure the user passed no more than one parameter (the host to switch to)
+if [ "$#" -gt 1 ]; then
+    echo -e "Too many parameters supplied; supply at most the host name\n"
     echo -e "${HELP}\n"
     exit 1
 fi
@@ -27,9 +27,27 @@ fi
 # Parse the command line to get the host
 HOST="$1"
 
+# If HOST is empty, then specify the host based on the current system
+# These values are hard-coded; as systems names change, this script must get updated
+CUR_HOST="$(hostnamectl hostname)"
+if [ -z "$HOST" ]; then
+    case "$CUR_HOST" in
+        slowe-l-pf4pwrr1)
+            HOST="2:defiant"
+            ;;
+        defiant)
+            HOST="1:slowe-l-pf4pwrr1"
+            ;;
+        *)
+            echo -e "Unrecognized host; aborting\n"
+            exit 1
+            ;;
+    esac
+fi
+
 # Switch to the specified host using Solaar
-solaar config "Wireless Keyboard ERGO K860" change-host "${HOST}"
-solaar config "MX Vertical Wireless Mouse" change-host "${HOST}"
+solaar config "MX Vertical Wireless Mouse" change-host "${HOST}" > /dev/null 2>&1
+solaar config "Wireless Keyboard ERGO K860" change-host "${HOST}" > /dev/null 2>&1
 
 # Display a notification
-notify-send "Keyboard and mouse switched to ${HOST}"
+notify-send -e "Keyboard and mouse switched to ${HOST}"
